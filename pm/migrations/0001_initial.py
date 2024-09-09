@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='custom_user_permissions', related_query_name='custom_user_permissions', to='auth.permission')),
             ],
             options={
-                'db_table': 'pm_user',
+                'db_table': 'user',
             },
         ),
         migrations.AddField(

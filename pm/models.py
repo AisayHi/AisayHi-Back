@@ -60,7 +60,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()  # UserManager를 사용자 모델의 매니저로 설정
 
     class Meta:
-        db_table = 'pm_user'
+        db_table = 'user'
 
 
 # SituationCategory 테이블에 맞는 모델
