@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import signup_api
 from .views import login_api
-from .views import GoodsViewSet, OrdersViewSet
+from .views import GoodsViewSet, OrderDetailViewSet
 
 # DefaultRouter는 ViewSet와 함께 사용되어 URL 패턴 자동 생성 및 관리
 router = DefaultRouter() # DefaultRouter 인스턴스 생성
@@ -12,7 +12,7 @@ router = DefaultRouter() # DefaultRouter 인스턴스 생성
 # prefix: URL의 접두사로 사용될 문자열
 # viewset: 등록할 ViewSet 클래스
 router.register(r'goods', GoodsViewSet)
-router.register(r'orders', OrdersViewSet)
+router.register(r'orderdetails', OrderDetailViewSet, basename='orderdetail')
 
 urlpatterns = [
     path('signup/', signup_api, name='signup'), # 회원가입

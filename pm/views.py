@@ -13,8 +13,8 @@ from .models import Goods
 from .serializers import GoodsSerializer
 
 # 주문
-from .models import Orders
-from .serializers import OrdersSerializer
+from .models import OrderDetail
+from .serializers import OrderDetailSerializer
 
 # 회원가입 API: 아이디, 이름, 비밀번호
 @csrf_exempt
@@ -22,22 +22,22 @@ def signup_api(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            login_id = data.get('login_id')
-            username = data.get('username')
-            userpwd = data.get('userpwd')
+            userId = data.get('userId')  # login_id -> userId로 변경
+            userName = data.get('userName')  # username -> userName으로 변경
+            userPwd = data.get('userPwd')  # userpwd -> userPwd로 변경
 
             # 아이디, 사용자명, 비밀번호 중 하나라도 입력하지 않으면 -> 에러
-            if not login_id or not username or not userpwd:
+            if not userId or not userName or not userPwd:
                 return JsonResponse({'error': 'Missing fields'}, status=400)
 
             # 사용자가 이미 존재하는지 확인 -> 중복 회원가입 방지
-            if User.objects.filter(login_id=login_id).exists():
+            if User.objects.filter(userId=userId).exists():
                 return JsonResponse({'error': 'User already exists'}, status=400)
 
             user = User(
-                login_id=login_id,
-                username=username,
-                userpwd=userpwd
+                userId=userId,
+                userName=userName,
+                userPwd=userPwd
             )
             user.save()
             return JsonResponse({'message': 'User created successfully'}, status=201)
@@ -53,23 +53,23 @@ def login_api(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            login_id = data.get('login_id')
-            userpwd = data.get('userpwd')
+            userId = data.get('userId')  # login_id -> userId로 변경
+            userPwd = data.get('userPwd')  # userpwd -> userPwd로 변경
 
-            if not login_id or not userpwd:
+            if not userId or not userPwd:
                 return JsonResponse({'error': 'Missing fields'}, status=400)
 
             # 사용자 인증 - 아이디, 비밀번호
-            user = authenticate(request, login_id=login_id, password=userpwd)
+            user = authenticate(request, userId=userId, password=userPwd)
 
             # 사용자가 존재한다면
             if user is not None:
                 login(request, user)
-                return JsonResponse({'message': 'Login successful',
-                                     'user': {
-                                         # 로그인 성공시 프론트에 넘길 객체: 로그인하면 해당 사용자 정보로 사이트 이용
-                                         'login_id': user.login_id,
-                                     },
+                return JsonResponse({
+                    'message': 'Login successful',
+                    'user': {
+                        'userId': user.userId,  # login_id -> userId로 변경
+                    },
                 }, status=200)
             else:
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)
@@ -91,13 +91,13 @@ class GoodsViewSet(viewsets.ModelViewSet):
     # 필터링 필드 설정: category와 brand 필드를 사용하여 필터링 가능
     filterset_fields = ['category', 'brand']
 
-    # 검색 필드 설정: goodsname과 goodsdesc 필드를 사용하여 검색 가능
-    search_fields = ['goodsname', 'goodsdesc']
+    # 검색 필드 설정: goodsName과 goodsDesc 필드를 사용하여 검색 가능
+    search_fields = ['goodsName', 'goodsDesc']  # 필드명 수정
 
-    # 정렬 필드 설정: price와 discountprice 필드를 사용하여 정렬 가능
-    ordering_fields = ['price', 'discountprice']
+    # 정렬 필드 설정: price와 discountedPrice 필드를 사용하여 정렬 가능
+    ordering_fields = ['price', 'discountedPrice']
 
-# 주문등록 API: 모든 필드 사용
-class OrdersViewSet(viewsets.ModelViewSet):
-    queryset = Orders.objects.all()
-    serializer_class = OrdersSerializer
+# 주문 상세 API: 모든 필드 사용
+class OrderDetailViewSet(viewsets.ModelViewSet):
+    queryset = OrderDetail.objects.all()  # OrderDetail 모델의 모든 데이터를 가져옴
+    serializer_class = OrderDetailSerializer
